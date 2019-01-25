@@ -36,14 +36,13 @@
                 </el-table-column>
             </el-table>
         </div>
-
     </div>
+
 
 </template>
 
 <script>
     export default {
-        name: 'user',
         data() {
             return {
                 tableData: [],

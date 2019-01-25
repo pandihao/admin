@@ -60,6 +60,17 @@
                     },
                     {
                         icon: 'iconfont elem-computer',
+                        index: '3',
+                        title: '审批',
+                        subs: [
+                            {
+                                index: '/application',
+                                title: '申请审批'
+                            },
+                        ]
+                    },
+                    {
+                        icon: 'iconfont elem-computer',
                         index: '4',
                         title: '执行任务',
                         subs: [

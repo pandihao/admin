@@ -77,9 +77,6 @@
                 }
             }
         },
-        components: {
-            VueCropper
-        },
         methods:{
             handlSucess(response,file){
                 console.log(response)

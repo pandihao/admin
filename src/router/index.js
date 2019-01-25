@@ -30,6 +30,11 @@ export default new Router({
                     meta: { title: 'ECS请求页面' }
                 },
                 {
+                    path: '/application',
+                    component: resolve => require(['../components/page/Approval.vue'], resolve),
+                    meta: { title: '申请审批' }
+                },
+                {
                     path: '/Sql',
                     component: resolve => require(['../components/page/Sql.vue'], resolve),
                     meta: { title: '数据上传' }
