@@ -6,19 +6,19 @@
             <el-button type="primary" class="el-icon-circle-plus" @click="dialogFormVisible = true">新增项目</el-button>
             <el-dialog title="新增项目" :visible.sync="dialogFormVisible">
                 <el-form :model="application">
-                    <el-form-item label="项目名称" >
+                    <el-form-item label="项目名称"  :label-width="formLabelWidth">
                         <el-input v-model="application.name" ></el-input>
                     </el-form-item>
-                    <el-form-item label="项目负责人" >
-                        <el-input v-model="application.developer" ></el-input>
+                    <el-form-item label="项目负责人" :label-width="formLabelWidth" >
+                        <el-input v-model="application.developer"  ></el-input>
                     </el-form-item>
-                    <el-form-item label="测试人员" >
+                    <el-form-item label="测试人员" :label-width="formLabelWidth" >
                         <el-input v-model="application.testers" ></el-input>
                     </el-form-item>
-                    <el-form-item label="发布时间" >
+                    <el-form-item label="发布时间"  :label-width="formLabelWidth">
                         <el-date-picker type="datetime" placeholder="选择时间" v-model="application.date" style="width: 100%;"></el-date-picker>
                     </el-form-item>
-                    <el-form-item label="上传文件" >
+                    <el-form-item label="上传文件"  :label-width="formLabelWidth">
                         <el-upload
                                 class="upload-demo"
                                 ref="upload_file"
@@ -27,10 +27,9 @@
                             <el-button slot="trigger" size="small" type="primary">选取文件</el-button>
                         </el-upload>
                     </el-form-item>
-                    <el-form-item label="备注信息" >
+                    <el-form-item label="备注信息"  :label-width="formLabelWidth">
                         <el-input  type="textarea" v-model="application.remark" ></el-input>
                     </el-form-item>
-
                 </el-form>
                 <div slot="footer" class="dialog-footer">
                     <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -77,7 +76,7 @@
     export default {
         data() {
             return {
-                formLabelWidth: '150px',
+                formLabelWidth: '120px',
                 dialogFormVisible: false,
                 approval:[{
                     name: 'test',
@@ -105,8 +104,6 @@
 
 </script>
 
-<style scoped>
-.pload-demo {
+<style>
 
-}
 </style>
