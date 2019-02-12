@@ -9,31 +9,52 @@
             <div class="plugins-tips">
                 MySQL脚本执行页面
             </div>
+            <!--<el-upload-->
+                <!--class="upload-demo"-->
+                <!--name="upload_file"-->
+                <!--ref="upload"-->
+                <!--action="http://test1-django.yunqueyi.com/backen/uploadsql/"-->
+                <!--:on-success="handlSucess"-->
+                <!--:before-upload="beforeAvatarUpload"-->
+                <!--:auto-upload="false"-->
+                <!--:limit="1"-->
+                <!--:on-exceed="handleExceed"-->
+                <!--accept=".sql"-->
+                <!--drag-->
+                <!--:data="DatabaseEnv"-->
+                <!--:headers="UploadHeader"-->
+                <!--&gt;-->
+                <!--<i class="el-icon-upload"></i>-->
+                <!--<div class="el-upload__text">将.sql文件拖到此处，或<em>点击上传</em></div>-->
+            <!--</el-upload>-->
             <el-upload
-                class="upload-demo"
-                name="upload_file"
-                ref="upload"
-                action="http://test1-django.yunqueyi.com/backen/uploadsql/"
-                :on-success="handlSucess"
-                :before-upload="beforeAvatarUpload"
-                :auto-upload="false"
-                :limit="1"
-                :on-exceed="handleExceed"
-                accept=".sql"
-                drag
-                :data="DatabaseEnv"
-                :headers="UploadHeader"
-                >
+                    name="upload_file"
+                    ref="upload"
+                    action=""
+                    :limit="1"
+                    accept=".sql"
+                    drag
+                    :headers="UploadHeader"
+                    :before-upload="beforeAvatarUpload"
+                    :http-request="uploadFile"
+                    :on-exceed="handleExceed"
+            >
+                <!--:before-upload="beforeAvatarUpload"-->
+                <!--:auto-upload="false"-->
                 <i class="el-icon-upload"></i>
                 <div class="el-upload__text">将.sql文件拖到此处，或<em>点击上传</em></div>
             </el-upload>
+
+
             <el-form :inline="true" :model="DatabaseEnv" :rules="rules" ref="DatabaseEnv">
-                <el-form-item label="数据库环境及实例" prop="dataenv">
+                <el-form-item label="数据库环境" prop="dataenv">
                     <el-select v-model="DatabaseEnv.dataenv" placeholder="请选择数据库环境">
                         <el-option label="test1环境" value="test1"></el-option>
                         <el-option label="test2环境" value="test2"></el-option>
                         <el-option label="uat环境" value="uat"></el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="数据库实例" prop="instance">
                     <el-select v-model="DatabaseEnv.instance" placeholder="请选择数据库实例">
                         <el-option label="pica数据库" value="pica"></el-option>
                         <el-option label="pica_log数据库" value="pica_log"></el-option>
@@ -45,7 +66,8 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload('DatabaseEnv')">上传并执行sql</el-button>
+                    <el-button style="margin-left: 10px;" size="small" type="success" @click="uploadForm">上传并执行sql</el-button>
+                    <!--<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload('DatabaseEnv')">上传并执行sql</el-button>-->
                 </el-form-item>
             </el-form>
         </div>
@@ -59,9 +81,11 @@
         name: 'sql',
         data: function(){
             return {
+                uploadsql: '',
                 DatabaseEnv: {
                     dataenv: '',
-                    instance: ''
+                    instance: '',
+                    filedata: ''
                 },
                 rules: {
                     dataenv : [
@@ -78,40 +102,55 @@
             }
         },
         methods:{
-            handlSucess(response,file){
-                console.log(response)
-                if (response['status'] ===  0 ){
-                    this.$alert('执行成功：' + response['filename'],'返回文件名称',{
-                        confirmButtonText: '确定',
-                    })
-                    this.$refs.upload.clearFiles();
-                }
-                else {
-                    this.$alert('报错信息：' + response['err_message'],'返回文件名称',{
-                        confirmButtonText: '确定',
-                    })
-                    this.$refs.upload.clearFiles();
-                }
+
+            uploadFile(file){
+                this.uploadsql=file.file
             },
-            submitUpload(Dataname){
-                this.$refs[Dataname].validate((valid) =>{
-                    if(valid) {
-                        this.$refs.upload.submit();
-                    }
-                    else {
-                        console.log('error submit');
-                        return false
-                    }
-                });
+
+            uploadForm() {
+                if (this.uploadsql.length === 0) {
+                    this.$message({
+                        message: '请先选择sql文件',
+                        type: 'error'
+                    })
+                    return false
+                }
+                let formdata = new FormData();
+                this.DatabaseEnv.filedata = this.uploadsql;
+                formdata.append('upload_file',this.DatabaseEnv.filedata);
+                formdata.append('dataenv',this.DatabaseEnv.dataenv);
+                formdata.append('instance',this.DatabaseEnv.instance);
+                // for ( var value of formdata.values()){
+                //     console.log(value);
+                // }
+
+                this.$axios.post(`${devops_url}/backen/uploadsql/`
+                    ,formdata)
+                    .then(res => {
+                        if (res.data['status'] ===  0 ){
+                            this.$alert('执行成功：' + res.data['filename'],'返回文件名称',{
+                                confirmButtonText: '确定',
+                            })
+                            // this.$refs.upload.clearFiles();
+                        }
+                        else {
+                            this.$alert('报错信息：' +  res.data['err_message'],'返回文件名称',{
+                                confirmButtonText: '确定',
+                            })
+                            // this.$refs.upload.clearFiles();
+                        }
+                        console.log("uploadFile success");
+                    })
             },
+
             handleExceed(files, fileList) {
                 this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
             },
             beforeRemove(file, fileList) {
                 return this.$confirm(`确定移除 ${ file.name }？`);
             },
+
             beforeAvatarUpload(file) {
-                console.log(file)
                 const regex_name = /.*\.sql/
                 const isLt50M = file.size / 1024 / 1024 < 50
                 const isSql   = regex_name.test(file.name)

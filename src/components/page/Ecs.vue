@@ -6,8 +6,8 @@
             </el-breadcrumb>
         </div>
         <div>
-            <el-button type="primary" @click="EcsInfo">刷新主机信息</el-button>
-        </div>
+        <el-button type="primary" @click="EcsInfo">刷新主机信息</el-button>
+    </div>
         <div class="container">
             <el-table :data="tableData" border style="width: 100%" >
                 <el-table-column label="序号" type="index" width="180"></el-table-column>
