@@ -158,7 +158,7 @@
                      .then(res => {
                          console.log(res)
                          if ( res.data.status  === 0){
-                             loading.close()
+                             loading.close();
                              this.$alert('详情请查询JOB ID :' + res.data.job_id  ,'提示',{
                                  confirmButtonText: '确定',
                              })

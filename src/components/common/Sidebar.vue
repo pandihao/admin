@@ -87,7 +87,7 @@
 
                     {
                         icon: 'iconfont elem-shujuku',
-                        index: 'sql',
+                        index: '/sql',
                         title: '数据处理'
                     },
                 ]

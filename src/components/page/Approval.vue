@@ -53,23 +53,23 @@
                 <el-table-column prop="current_date"      label="申请提交时间" width="180"></el-table-column>
                 <el-table-column prop="remark"    label="备注信息" width="180"></el-table-column>
                 <el-table-column prop="file_url"    label="附件路径" width="180"></el-table-column>
-                <el-table-column prop="approver"  label="执行人" width="180"></el-table-column>
+                <el-table-column prop="approver"  label="创建人" width="180"></el-table-column>
                 <el-table-column
                         prop="status"
                         label="状态"
                         width="100"
-                        :filters="[{ text : 'success',value : 0},{text : 'fail' , value: 1}]"
+                        :filters="[{ text : '完成',value : 0},{text : '未完成' , value: 1}]"
                         :filter-method="filterTag"
                         filter-placement="bottom-end">
                     <template slot-scope="scope">
                         <el-tag
                                 :type="scope.row.status === 0  ? 'success' : 'danger'"
-                                disable-transitions>{{scope.row.status === 0  ? 'success' : 'fail'}}</el-tag>
+                                disable-transitions>{{scope.row.status === 0  ? '完成' : '未完成'}}</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="operate" label="操作">
                     <template slot-scope="scope">
-                        <el-button size="mini"  :disabled="false" type="primary" @click="Execute(scope.$index, scope.row)">执行</el-button>
+                        <el-button size="mini"  :disabled="scope.row.status === 0" type="primary" @click="Execute(scope.$index, scope.row)">执行</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -86,14 +86,6 @@
                 dialogFormVisible: false,
                 filedisplay: 0,
                 approval:[],
-                // approval:[{
-                //     name: 'test',
-                //     developer: '小王',
-                //     testers: '小张',
-                //     date: '2019-01-01 16:00:00',
-                //     remark: '没毛病',
-                //     approver: '二麻子'
-                // }],
                 application:{
                     name: '',
                     developer: '',
@@ -106,6 +98,27 @@
             }
         },
         methods: {
+            Execute(index,row){
+                const  loading = this.$loading({
+                    lock: true,
+                    text: 'Loading',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
+                let taskinfo ={
+                    taskid: index
+                };
+                this.$axios.put(`${devops_url}/backen/deployment/`,JSON.stringify(taskinfo))
+                    .then(res => {
+                        if ( res.data.res_code  === 1){
+                            loading.close();
+                            this.$alert('确认完成'   ,'提示',{
+                                confirmButtonText: '确定',
+                            })
+                            this.approvalInfo()
+                        }
+                    })
+            },
             filterTag(value, row) {
                 // console.log(row.status)
                 return row.status === value;
@@ -133,6 +146,12 @@
                 //     })
                 //     return false
                 // }
+                const  loading = this.$loading({
+                    lock: true,
+                    text: 'Loading',
+                    spinner: 'el-icon-loading',
+                    background: 'rgba(0, 0, 0, 0.7)'
+                });
                 let uploaddata ={};
                 let username = localStorage.getItem('ms_username');
                 let formdata = new FormData();
@@ -152,19 +171,20 @@
                 this.$axios.post(`${devops_url}/backen/deployment/`
                     ,formdata)
                     .then(res => {
-                        if (res.data['status'] ===  0 ){
-                            this.$alert('执行成功：' + res.data['filename'],'返回文件名称',{
+                        if (res.data.res_code  === 1 ){
+                            loading.close();
+                            this.$alert('创建成功' ,'提示',{
                                 confirmButtonText: '确定',
                             })
-                            // this.$refs.upload.clearFiles();
+                            this.approvalInfo()
+
                         }
                         else {
-                            this.$alert('报错信息：' +  res.data['err_message'],'返回文件名称',{
+                            this.$alert('创建失败' ,'提示',{
                                 confirmButtonText: '确定',
                             })
                             // this.$refs.upload.clearFiles();
                         }
-                        console.log("uploadFile success");
                     })
             }
 
