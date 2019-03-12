@@ -17,8 +17,8 @@ axios.defaults.headers.common['Authorization'] = localStorage.getItem('user_toke
 
 
 // 设置全局变量
-//window.devops_url = "http://test1-django.yunqueyi.com"
-window.devops_url = "/api"
+window.devops_url = "http://test1-django.yunqueyi.com"
+// window.devops_url = "/api"
 
 
 //使用钩子函数对路由进行权限跳转
